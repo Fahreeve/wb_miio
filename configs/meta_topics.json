@@ -1,0 +1,193 @@
+{
+    "meta": {
+        "driver": "python-miio",
+        "title": {
+            "en": "AirHumidifier"
+        }
+    },
+    "power": {
+        "title": {
+            "en": "power"
+        },
+        "order": 1,
+        "type": "switch"
+    },
+    "fault": {
+        "title": {
+            "en": "fault"
+        },
+        "order": 1,
+        "readonly": true,
+        "type": "value"
+    },
+    "mode": {
+        "title": {
+            "en": "mode"
+        },
+        "order": 1,
+        "type": "value",
+        "enum": {
+            "0": {
+                "en": "Auto"
+            },
+            "1": {
+                "en": "Level1"
+            },
+            "2": {
+                "en": "Level2"
+            },
+            "3": {
+                "en": "Level3"
+            }
+        }
+    },
+    "target_humidity": {
+        "title": {
+            "en": "target_humidity"
+        },
+        "order": 1,
+        "units": "%, RH",
+        "min": 30,
+        "max": 80,
+        "type": "range"
+    },
+    "water_level": {
+        "title": {
+            "en": "water_level"
+        },
+        "order": 1,
+        "readonly": true,
+        "type": "value"
+    },
+    "speed_level": {
+        "title": {
+            "en": "speed_level"
+        },
+        "order": 1,
+        "min": 200,
+        "max": 2000,
+        "precision": 10,
+        "type": "range",
+        "units": "rpm"
+    },
+    "dry": {
+        "title": {
+            "en": "dry"
+        },
+        "order": 1,
+        "type": "switch"
+    },
+    "use_time": {
+        "title": {
+            "en": "use_time"
+        },
+        "order": 1,
+        "readonly": true,
+        "type": "value",
+        "units": "h"
+    },
+    "button_pressed": {
+        "title": {
+            "en": "button_pressed"
+        },
+        "order": 1,
+        "readonly": true,
+        "type": "value",
+        "enum": {
+            "0": {
+                "en": "none"
+            },
+            "1": {
+                "en": "led"
+            },
+            "2": {
+                "en": "power"
+            }
+        }
+    },
+    "temperature": {
+        "title": {
+            "en": "temperature"
+        },
+        "order": 1,
+        "readonly": true,
+        "units": "deg C",
+        "precision": 0.1,
+        "type": "value"
+    },
+    "humidity": {
+        "title": {
+            "en": "humidity"
+        },
+        "order": 1,
+        "readonly": true,
+        "units": "%, RH",
+        "type": "value"
+    },
+    "fahrenheit": {
+        "title": {
+            "en": "fahrenheit"
+        },
+        "order": 1,
+        "readonly": true,
+        "precision": 0.1,
+        "type": "value"
+    },
+    "buzzer": {
+        "title": {
+            "en": "buzzer"
+        },
+        "order": 1,
+        "type": "switch"
+    },
+    "led_brightness": {
+        "title": {
+            "en": "led_brightness"
+        },
+        "order": 1,
+        "type": "value",
+        "enum": {
+            "0": {
+                "en": "Dark"
+            },
+            "1": {
+                "en": "Glimmer"
+            },
+            "2": {
+                "en": "Brightest"
+            }
+        }
+    },
+    "child_lock": {
+        "title": {
+            "en": "child_lock"
+        },
+        "order": 1,
+        "type": "switch"
+    },
+    "actual_speed": {
+        "title": {
+            "en": "actual_speed"
+        },
+        "order": 1,
+        "readonly": true,
+        "type": "value",
+        "units": "rpm"
+    },
+    "power_time": {
+        "title": {
+            "en": "power_time"
+        },
+        "order": 1,
+        "readonly": true,
+        "units": "h",
+        "type": "value"
+    },
+    "clean_mode": {
+        "title": {
+            "en": "clean_mode"
+        },
+        "order": 1,
+        "type": "switch"
+    }
+}

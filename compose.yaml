@@ -1,0 +1,11 @@
+services:
+  wb_miio:
+    image: wb_miio
+    build:
+      context: .
+    container_name: wb_miio
+    environment:
+      - MQTT_ADDR=wb.lan
+    restart: unless-stopped
+    volumes:
+      - ./configs/devices.json:/app/configs/devices.json
