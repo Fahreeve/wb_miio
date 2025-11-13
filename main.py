@@ -342,7 +342,8 @@ async def device_thread(mqtt_address: str, meta_topics: dict, dev_param: DeviceP
                 logging.info('Run event cycle...')
                 await e.run()
 
-        except aiomqtt.MqttError:
+        except aiomqtt.MqttError as e:
+            logging.exception(e)
             # for t in pending:
             #     t.cancel()
             logging.error(f"Connection lost; Reconnecting in {interval} seconds ...")
@@ -363,6 +364,8 @@ else:
 
 async def main():
     tasks = [asyncio.Task(device_thread(mqtt_address, meta_topics, DeviceParams(**d))) for d in devices]
-    await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
+    task, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
+    # Для корректного завершения работы в случае непредвиденной ошибки
+    task.pop().done()
 
 asyncio.run(main())
