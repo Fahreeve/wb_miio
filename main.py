@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+import signal
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
@@ -203,6 +204,7 @@ class EventCycle:
         """
         await self.tm.publish_meta()
         err_topics = await self.tm.subscribe_topics()
+        await self.tm.publish_error_state()  # No errors
         # если подписка на топики произошла с ошибкой надо соответствующим образом отметить их состояние
         if err_topics:
             logging.error('Failed subscribe topics: %s', err_topics)
@@ -325,15 +327,20 @@ class EventCycle:
                 # заново начинаем ждать сообщение из топиков
                 self.consume_message_task = self.create_consume_message_task()
 
+    async def stop(self):
+        self.publish_states_task.cancel()
+        self.consume_message_task.cancel()
+        await self.tm.publish_error_state(ErrorState.read)
+
 
 async def device_thread(mqtt_address: str, meta_topics: dict, dev_param: DeviceParams) -> None:
     logging.info('Start service')
     client = aiomqtt.Client(mqtt_address)
     interval = 5  # Seconds
     while True:
-        try:
-            logging.info('Connect to mqtt')
-            async with client:
+        logging.info('Connect to mqtt')
+        async with client:
+            try:
                 logging.info('Connect to mqtt -> success')
                 e = EventCycle(client, interval, meta_topics, dev_param)
                 logging.info('Configure mqtt')
@@ -341,13 +348,15 @@ async def device_thread(mqtt_address: str, meta_topics: dict, dev_param: DeviceP
                 logging.info('Configure mqtt -> success')
                 logging.info('Run event cycle...')
                 await e.run()
-
-        except aiomqtt.MqttError as e:
-            logging.exception(e)
-            # for t in pending:
-            #     t.cancel()
-            logging.error(f"Connection lost; Reconnecting in {interval} seconds ...")
-            await asyncio.sleep(interval)
+            except asyncio.CancelledError:
+                await e.stop()
+                return
+            except aiomqtt.MqttError as e:
+                logging.exception(e)
+                # for t in pending:
+                #     t.cancel()
+                logging.error(f"Connection lost; Reconnecting in {interval} seconds ...")
+                await asyncio.sleep(interval)
 
 
 with open("configs/meta_topics.json", "r") as f:
@@ -364,8 +373,11 @@ else:
 
 async def main():
     tasks = [asyncio.Task(device_thread(mqtt_address, meta_topics, DeviceParams(**d))) for d in devices]
+    signal.signal(signal.SIGTERM, lambda signum, frame: [t.cancel() for t in tasks])
+    signal.signal(signal.SIGINT, lambda signum, frame: [t.cancel() for t in tasks])
     task, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
     # Для корректного завершения работы в случае непредвиденной ошибки
     task.pop().done()
+    await asyncio.gather(*pending, return_exceptions=True)
 
 asyncio.run(main())
