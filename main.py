@@ -286,6 +286,8 @@ class EventCycle:
             if new_dev:
                 self.create_dev()
                 self.publish_states_task = self.create_publish_states_task()
+                # сбрасываем состояние ошибок потому что создаем новое подключение
+                await self.tm.publish_error_state()
 
             # ждем одно из 2 событий в зависимости от того что произойдет раньше
             done, pending = await asyncio.wait(
