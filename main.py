@@ -46,16 +46,22 @@ class ErrorManager:
     storage = defaultdict(ErrorState)
 
     def set_error(self, topic: str, error: ErrorType) -> None:
-        if error is ErrorType.read:
-            self.storage[topic].read = True
-        else:
-            self.storage[topic].write = True
+        match error:
+            case ErrorType.read:
+                self.storage[topic].read = True
+            case ErrorType.write:
+                self.storage[topic].write = True
+            case _:
+                raise RuntimeError(f"Try to set error {error} for {topic}")
 
     def remove_error(self, topic: str, error: ErrorType) -> None:
-        if error is ErrorType.read:
-            self.storage[topic].read = False
-        else:
-            self.storage[topic].write = False
+        match error:
+            case ErrorType.read:
+                self.storage[topic].read = False
+            case ErrorType.write:
+                self.storage[topic].write = False
+            case _:
+                raise RuntimeError(f"Try to set error {error} for {topic}")
 
     def get_state(self, topic: str) -> str:
         result = ''
@@ -96,7 +102,7 @@ class TopicManager:
                         # потому что в json который в /meta там должно быть true/false и это более удобно для чтения
                         value = int(meta_data.get(f, False))
                     else:
-                        # для остальных значений трансморфмация не требуется
+                        # для остальных значений трансформация не требуется
                         value = meta_data.get(f)
                     if value is not None:
                         # если флаг есть в json метафайле, то публикуем его в топик
@@ -317,10 +323,10 @@ class EventCycle:
                     # не смогли дернуть ручку
                     logging.exception(e)
                     new_dev = True
-                    self.tm.err_state.set_error(topic, ErrorType.read)
+                    self.tm.err_state.set_error(topic, ErrorType.write)
                 else:
                     # смогли дернуть ручку
-                    self.tm.err_state.remove_error(topic, ErrorType.read)
+                    self.tm.err_state.remove_error(topic, ErrorType.write)
                 await self.client.publish(
                     topic + '/meta/error',
                     payload=self.tm.err_state.get_state(topic),
