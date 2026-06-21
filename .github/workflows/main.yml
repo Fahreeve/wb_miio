@@ -58,7 +58,8 @@ jobs:
         with:
           context: .
           # Указываем платформы: x86_64, ARMv7, ARMv8 (64-bit)
-          platforms: linux/amd64, linux/arm/v7, linux/arm64
+          platforms: linux/amd64
+          #, linux/arm/v7, linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
