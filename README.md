@@ -20,6 +20,12 @@ https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor
 ### meta_topics.json
 Файл, который содержит данные для мета топиков устройства. В моем случае это увлажнитель воздуха.
 
+### Как получить готовый образ
+
+```bash
+docker pull ghcr.io/fahreeve/wb_miio:latest
+```
+
 ### Сборка контейнера
 #### Настройка кросс компиляции
 ```bash
@@ -43,7 +49,11 @@ docker buildx build --tag hum2:latest --load .
 
 ### Разработка
 Для увлажнителя:
+
 Скачать http://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:humidifier:0000A00E:zhimi-ca4:2
+
 Запустить tools/generate_mappings.py - это транслятор спецификации протокола выше в meta_topics для MQTT.
+
 Далее в main.py надо править методы create_action_mapping и transform_publish_value.
+
 Присылайте пулл-реквесты!

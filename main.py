@@ -293,6 +293,9 @@ class EventCycle:
                 self.create_dev()
                 self.publish_states_task = self.create_publish_states_task()
                 # сбрасываем состояние ошибок потому что создаем новое подключение
+                for topic in self.tm.get_control_read_topics():
+                    self.tm.err_state.remove_error(topic, ErrorType.read)
+                    self.tm.err_state.remove_error(topic, ErrorType.write)
                 await self.tm.publish_error_state()
 
             # ждем одно из 2 событий в зависимости от того что произойдет раньше
